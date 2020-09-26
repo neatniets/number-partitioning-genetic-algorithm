@@ -4,7 +4,7 @@
 #include <string.h>
 #include <limits.h>
 
-#define NO_CHANGE_GEN_CUTOFF_FACTOR     1
+#define GEN_CUTOFF_FACTOR               1
 #define POP_SIZE_FACTOR                 1
 
 static result_t *result_malloc(chrom_t *best_chrom,
@@ -36,11 +36,10 @@ result_t *num_part_2way(const prob_set_t *ps) {
         chrom_t *best_chrom = chrom_malloc(ps->num_items);
         best_chrom->fitness = LLONG_MAX;
         const size_t pop_size = ps->num_items * POP_SIZE_FACTOR;
-        const size_t max_gen = ps->num_items * NO_CHANGE_GEN_CUTOFF_FACTOR;
+        const size_t max_gen = ps->num_items * GEN_CUTOFF_FACTOR;
         size_t num_gen_passed = 0;
-        size_t num_gen_passed_no_change = 0;
         pop_t *pop = initial_pop(pop_size, ps->num_items, ps->item_vals);
-        while ((num_gen_passed_no_change < max_gen)
+        while ((num_gen_passed < max_gen)
                && (best_chrom->fitness != 0)) {
                 pop_t *tourn = tourn_select(pop);
                 pop_t *next_gen = new_gen(tourn, ps->item_vals);
@@ -49,15 +48,8 @@ result_t *num_part_2way(const prob_set_t *ps) {
                 pop = next_gen;
                 size_t fittest_i = find_fittest(pop);
                 if (chrom_fit_cmp(best_chrom, pop->chroms[fittest_i]) == 1) {
-                        num_gen_passed_no_change
-                                -= num_gen_passed_no_change
-                                   * (best_chrom->fitness
-                                      - pop->chroms[fittest_i]->fitness)
-                                   / (best_chrom->fitness);
                         memcpy(best_chrom, pop->chroms[fittest_i],
                                CHROM_SIZE(best_chrom->num_bits));
-                } else {
-                        num_gen_passed_no_change++;
                 }
                 num_gen_passed++;
         }
