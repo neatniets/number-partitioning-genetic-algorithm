@@ -1,21 +1,39 @@
+/** Implements a genetic algorithm for use with number-partition.h
+ * functions
+ * @file number-partition.c */
 #include "number-partition.h"
 #include "population.h"
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 
+/** Max number of generations the algorithm will go through before
+ * terminating */
 #define MAX_GENS                        100
+/** Scaling factor for population size based on problem instance input size */
 #define POP_SIZE_FACTOR                 1
 
+/** Return a result structure based on the decidedly-best chromosome */
 static result_t *result_malloc(chrom_t *best_chrom,
                                const long long *item_vals,
                                size_t num_gens_passed);
+/** Finds the fittest chromosome in the population and returns its index */
 static size_t find_fittest(const pop_t *pop);
+/** Generates a random initial population of chromosomes and returns it */
 static pop_t *initial_pop(size_t num_chroms, size_t num_bits,
                           const long long *item_vals);
+/** Compares the fitness of two chromosomes; returns 1 if c2 is more fit,
+ * -1 if c1 is more fit, and 0 if both are equally fit */
 static int chrom_fit_cmp(const chrom_t *c1, const chrom_t *c2);
+/** Calculates the fitness of an entire population and modifies the
+ * chromosomes' unfitness values accordingly */
 static void pop_calc_fitness(pop_t *pop, const long long *item_vals);
+/** Performs tournament selection and returns a mating pool which _points_ to
+ * chromosomes in the initial population
+ * @post make sure to pop_free(mating_pool) and to pop_purge(pop) */
 static pop_t *tourn_select(const pop_t *pop);
+/** Generate a new generation to replace the old one using the mating pool for
+ * crossover and mutating the offspring */
 static pop_t *new_gen(const pop_t *tourn, const long long *item_vals);
 
 prob_set_t *prob_set_malloc(size_t num_items) {
