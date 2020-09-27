@@ -25,7 +25,6 @@ int main(void) {
                 scanf(" %lld", ps->item_vals+i);
         }
         long double avg_gen = 0;
-        long long best_gen = LLONG_MAX;
         long double avg_sum_diff = 0;
         long long best_sum_diff = LLONG_MAX;
         for (size_t i=0; i<NUM_PASSES; i++) {
@@ -34,9 +33,6 @@ int main(void) {
                 print_result(res);
                 avg_gen = avg_gen / (i+1) * i
                           + (long double)res->num_gens_passed / (i+1);
-                if (res->num_gens_passed < best_gen) {
-                        best_gen = (long long)res->num_gens_passed;
-                }
                 long long set0_sum = sum_set(res->set0_vals, res->set0_count);
                 long long set1_sum = sum_set(res->set1_vals, res->set1_count);
                 long long sum_diff;
@@ -54,10 +50,9 @@ int main(void) {
                 putchar('\n');
         }
         printf("average number of generations passed = %Lf\n"
-               "lowest number of generations passed = %lld\n"
                "average sum difference = %Lf\n"
                "best sum difference = %lld\n",
-               avg_gen, best_gen, avg_sum_diff, best_sum_diff);
+               avg_gen, avg_sum_diff, best_sum_diff);
         prob_set_free(ps);
         return 0;
 }
