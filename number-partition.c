@@ -4,7 +4,7 @@
 #include <string.h>
 #include <limits.h>
 
-#define GEN_CUTOFF_FACTOR               1
+#define MAX_GENS                        100
 #define POP_SIZE_FACTOR                 1
 
 static result_t *result_malloc(chrom_t *best_chrom,
@@ -36,10 +36,9 @@ result_t *num_part_2way(const prob_set_t *ps) {
         chrom_t *best_chrom = chrom_malloc(ps->num_items);
         best_chrom->fitness = LLONG_MAX;
         const size_t pop_size = ps->num_items * POP_SIZE_FACTOR;
-        const size_t max_gen = ps->num_items * GEN_CUTOFF_FACTOR;
         size_t num_gen_passed = 0;
         pop_t *pop = initial_pop(pop_size, ps->num_items, ps->item_vals);
-        while ((num_gen_passed < max_gen)
+        while ((num_gen_passed < MAX_GENS)
                && (best_chrom->fitness != 0)) {
                 pop_t *tourn = tourn_select(pop);
                 pop_t *next_gen = new_gen(tourn, ps->item_vals);
