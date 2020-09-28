@@ -52,12 +52,12 @@ void result_free(result_t *res) {
 
 result_t *num_part_2way(const prob_set_t *ps) {
         chrom_t *best_chrom = chrom_malloc(ps->num_items);
-        best_chrom->fitness = LLONG_MAX;
+        best_chrom->unfitness = LLONG_MAX;
         const size_t pop_size = ps->num_items * POP_SIZE_FACTOR;
         pop_t *pop = initial_pop(pop_size, ps->num_items, ps->item_vals);
         size_t num_gen_passed = 1;
         while ((num_gen_passed < MAX_GENS)
-               && (best_chrom->fitness != 0)) {
+               && (best_chrom->unfitness != 0)) {
                 pop_t *tourn = tourn_select(pop);
                 pop_t *next_gen = new_gen(tourn, ps->item_vals);
                 pop_free(tourn);
@@ -129,9 +129,9 @@ static pop_t *initial_pop(size_t num_chroms, size_t num_bits,
         return pop;
 }
 static int chrom_fit_cmp(const chrom_t *c1, const chrom_t *c2) {
-        if (c1->fitness < c2->fitness) {
+        if (c1->unfitness < c2->unfitness) {
                 return -1;
-        } else if (c1->fitness > c2->fitness) {
+        } else if (c1->unfitness > c2->unfitness) {
                 return 1;
         } else {
                 return 0;
@@ -139,25 +139,25 @@ static int chrom_fit_cmp(const chrom_t *c1, const chrom_t *c2) {
 }
 struct fitness_context {
         const long long *item_vals;
-        long long fitness;
+        long long unfitness;
 };
 static void bit_calc_fitness(bool bit_val, void *fitness_context) {
         struct fitness_context *context
                 = (struct fitness_context *)fitness_context;
         if (bit_val) {
-                context->fitness -= *context->item_vals;
+                context->unfitness -= *context->item_vals;
         } else {
-                context->fitness += *context->item_vals;
+                context->unfitness += *context->item_vals;
         }
         context->item_vals++;
 }
 static void chrom_calc_fitness(chrom_t *chrom, const long long *item_vals) {
         struct fitness_context context = {item_vals, 0};
         chrom_bitwise_read(chrom, &context, bit_calc_fitness);
-        if (context.fitness < 0) {
-                chrom->fitness = -context.fitness;
+        if (context.unfitness < 0) {
+                chrom->unfitness = -context.unfitness;
         } else {
-                chrom->fitness = context.fitness;
+                chrom->unfitness = context.unfitness;
         }
 }
 static void pop_calc_fitness(pop_t *pop, const long long *item_vals) {

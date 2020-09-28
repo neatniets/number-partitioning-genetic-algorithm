@@ -24,11 +24,11 @@
         (offsetof(chrom_t, bytes) + BITS2BYTES(NUM_BITS))
 /** Typedef for struct chromosome */
 typedef struct chromosome chrom_t;
-/** Structure representing a binary chromosome; its fitness is always
+/** Structure representing a binary chromosome; its unfitness is always
  * uninitialized when allocated */
 struct chromosome {
-        /** Fitness variable to be determined externally */
-        long long fitness;
+        /** Unfitness variable to be determined externally */
+        long long unfitness;
         /** Number of bits contained in bytes array */
         size_t num_bits;
         /** Byte array to hold bits */
@@ -36,12 +36,12 @@ struct chromosome {
 };
 
 /** Allocates a chromosome big enough to fit num_bits
- * @post                fitness is uninitialized
+ * @post                unfitness is uninitialized
  * @post                bytes are uninitialized; space for them is
  *                      allocated */
 chrom_t *chrom_malloc(size_t num_bits);
 /** Allocates a chromosome with num_bits random bits
- * @post                fitness is uninitialized
+ * @post                unfitness is uninitialized
  * @post                leading bit of entire chromosome is always 0 */
 chrom_t *chrom_rand(size_t num_bits);
 /** Frees space granted for chromosome */
@@ -63,7 +63,7 @@ void chrom_bitwise_rnw(chrom_t *chrom, void *context,
 /** Inverts each bit of the chromosome */
 void chrom_invert(chrom_t *chrom);
 /** Performs uniform crossover between parents to generate child chromosome
- * @post                child chromosome's fitness will be uninitialized
+ * @post                child chromosome's unfitness will be uninitialized
  * @post                child chromosome's leading bit will always be 0;
  *                      this is guaranteed as the parents should follow this
  *                      pattern, but will also be enforced internally */
@@ -73,8 +73,8 @@ chrom_t *chrom_ucx(const chrom_t *parent1, const chrom_t *parent2);
  * @post                if the leading bit of chromosome is mutated to be 1,
  *                      the chromosome will be inverted so that it is 0 again;
  *                      this merely swaps between 2 groups and should not
- *                      impact fitness from if it were left uninverted
- * @post                chromosome's fitness will be invalidated but
+ *                      impact unfitness from if it were left uninverted
+ * @post                chromosome's unfitness will be invalidated but
  *                      unaltered */
 void chrom_mutate(chrom_t *chrom);
 
